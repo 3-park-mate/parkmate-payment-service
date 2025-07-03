@@ -59,32 +59,14 @@ public class Payment extends BaseEntity {
     @Column(name = "approved_at")
     private ZonedDateTime approvedAt;
 
-//    @Builder
-//    private Payment(Long id, String paymentUuid, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentType paymentType, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
-//        this.id = id;
-//        this.paymentUuid = paymentUuid;
-//        this.paymentKey = paymentKey;
-//        this.orderId = orderId;
-//        this.totalAmount = totalAmount;
-//        this.userUuid = userUuid;
-//        this.paymentType = paymentType;
-//        this.paymentMethod = paymentMethod;
-//        this.pgProvider = pgProvider;
-//        this.paymentStatus = paymentStatus;
-//        this.requestedAt = requestedAt;
-//        this.approvedAt = approvedAt;
-//    }
-
-
     @Builder
-    private Payment(Long id, String paymentCode, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentType paymentType, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
+    private Payment(Long id, String paymentCode, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
         this.id = id;
         this.paymentCode = paymentCode;
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.totalAmount = totalAmount;
         this.userUuid = userUuid;
-        this.paymentType = paymentType;
         this.paymentMethod = paymentMethod;
         this.pgProvider = pgProvider;
         this.paymentStatus = paymentStatus;
