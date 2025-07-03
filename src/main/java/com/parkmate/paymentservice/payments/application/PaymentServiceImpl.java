@@ -60,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentResponseDto paymentResponseDto = mapper.convertValue(response, PaymentResponseDto.class);
 
-        Payment payment = paymentRequestDto.toEntity(paymentResponseDto);
+        Payment payment = paymentResponseDto.toEntity(paymentResponseDto, paymentRequestDto);
 
         paymentRepository.save(payment);
 

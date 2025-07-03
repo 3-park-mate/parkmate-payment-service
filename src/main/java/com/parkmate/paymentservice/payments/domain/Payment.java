@@ -18,13 +18,9 @@ public class Payment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Comment("결제 코드(서버에서 생성)")
-//    @Column(name = "payment_code", nullable = false)
-//    private String paymentCode;
-
-    @Comment("결제 코드(서버에서 생성)")
-    @Column(name = "payment_UUID", nullable = false)
-    private String paymentUuid;
+    @Comment("결제 코드(서버에서 생성), UUID")
+    @Column(name = "payment_code", nullable = false)
+    private String paymentCode;
 
     @Comment("[토스]결제 키")
     @Column(name = "payment_key", nullable = false)
@@ -43,11 +39,6 @@ public class Payment extends BaseEntity {
     private String userUuid;
 
     @Enumerated(EnumType.STRING)
-    @Comment("결제 타입")
-    @Column(name = "payment_type", nullable = false)
-    private PaymentType paymentType;
-
-    @Enumerated(EnumType.STRING)
     @Comment("결제 방식")
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
@@ -62,14 +53,33 @@ public class Payment extends BaseEntity {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "requested_at")
     private ZonedDateTime requestedAt;
 
+    @Column(name = "approved_at")
     private ZonedDateTime approvedAt;
 
+//    @Builder
+//    private Payment(Long id, String paymentUuid, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentType paymentType, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
+//        this.id = id;
+//        this.paymentUuid = paymentUuid;
+//        this.paymentKey = paymentKey;
+//        this.orderId = orderId;
+//        this.totalAmount = totalAmount;
+//        this.userUuid = userUuid;
+//        this.paymentType = paymentType;
+//        this.paymentMethod = paymentMethod;
+//        this.pgProvider = pgProvider;
+//        this.paymentStatus = paymentStatus;
+//        this.requestedAt = requestedAt;
+//        this.approvedAt = approvedAt;
+//    }
+
+
     @Builder
-    private Payment(Long id, String paymentUuid, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentType paymentType, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
+    private Payment(Long id, String paymentCode, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentType paymentType, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
         this.id = id;
-        this.paymentUuid = paymentUuid;
+        this.paymentCode = paymentCode;
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.totalAmount = totalAmount;
@@ -81,5 +91,4 @@ public class Payment extends BaseEntity {
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
     }
-
 }
