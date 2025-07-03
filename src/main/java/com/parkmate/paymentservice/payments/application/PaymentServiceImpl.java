@@ -5,12 +5,14 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.parkmate.paymentservice.common.config.TossPaymentConfig;
+import com.parkmate.paymentservice.kafka.event.payment.PaymentEvent;
 import com.parkmate.paymentservice.payments.domain.Payment;
 import com.parkmate.paymentservice.payments.dto.request.PaymentRequestDto;
 import com.parkmate.paymentservice.payments.dto.response.PaymentResponseDto;
 import com.parkmate.paymentservice.payments.infrastructure.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +34,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final TossPaymentConfig tossPaymentConfig;
     private final ObjectMapper objectMapper;
     private final PaymentRepository paymentRepository;
-
     private final RestTemplate restTemplate;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     @Transactional
     @Override
@@ -46,17 +49,12 @@ public class PaymentServiceImpl implements PaymentService {
         body.put("orderId", paymentRequestDto.getOrderId());
         body.put("amount", paymentRequestDto.getAmount());
 
-        log.info(">>> [TOSS 요청 준비]");
-        log.info(">>> paymentKey: {}", paymentRequestDto.getPaymentKey());
-        log.info(">>> orderId: {}", paymentRequestDto.getOrderId());
-        log.info(">>> amount: {}", paymentRequestDto.getAmount());
-
         try {
             String jsonBody = objectMapper.writeValueAsString(body);
-            log.info(">>> JSON Body: {}", jsonBody);
-            log.info(">>> Headers: {}", headers.toSingleValueMap());
+
         } catch (Exception ex) {
             log.warn(">>> JSON 직렬화 실패: {}", ex.getMessage());
+
         }
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(body, headers);
@@ -79,6 +77,8 @@ public class PaymentServiceImpl implements PaymentService {
             Payment payment = paymentResponseDto.toEntity(paymentResponseDto, paymentRequestDto);
 
             paymentRepository.save(payment);
+
+            eventPublisher.publishEvent(PaymentEvent.from(payment));
 
         } catch (HttpClientErrorException e) {
             log.error(">>> Toss API Error Body: {}", e.getResponseBodyAsString());

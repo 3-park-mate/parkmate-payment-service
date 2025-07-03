@@ -29,7 +29,6 @@ public class PaymentController {
         return ApiResponse.ok(
                 "결제 승인되었습니다"
         );
-
     }
 
 }

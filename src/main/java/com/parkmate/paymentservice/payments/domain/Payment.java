@@ -73,4 +73,5 @@ public class Payment extends BaseEntity {
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
     }
+
 }
