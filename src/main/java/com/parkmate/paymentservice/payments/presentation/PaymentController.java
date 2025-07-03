@@ -1,5 +1,6 @@
 package com.parkmate.paymentservice.payments.presentation;
 
+import com.parkmate.paymentservice.common.response.ApiResponse;
 import com.parkmate.paymentservice.payments.application.PaymentService;
 import com.parkmate.paymentservice.payments.dto.request.PaymentRequestDto;
 import com.parkmate.paymentservice.payments.vo.request.PaymentRequestVo;
@@ -20,11 +21,14 @@ public class PaymentController {
             tags = {"PAYMENT-SERVICE"}
     )
     @PostMapping
-    public void confirmPayment(
+    public ApiResponse<String> confirmPayment(
             @RequestHeader("X-User-UUID") String userUuid,
             @RequestBody PaymentRequestVo paymentRequestVo
     ) {
         paymentService.confirmPayment(PaymentRequestDto.of(userUuid, paymentRequestVo));
+        return ApiResponse.ok(
+                "결제 승인되었습니다"
+        );
 
     }
 

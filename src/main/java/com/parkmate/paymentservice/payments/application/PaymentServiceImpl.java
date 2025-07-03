@@ -10,6 +10,7 @@ import com.parkmate.paymentservice.payments.dto.request.PaymentRequestDto;
 import com.parkmate.paymentservice.payments.dto.response.PaymentResponseDto;
 import com.parkmate.paymentservice.payments.infrastructure.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
     private final TossPaymentConfig tossPaymentConfig;
@@ -41,28 +44,47 @@ public class PaymentServiceImpl implements PaymentService {
         Map<String, Object> body = new HashMap<>();
         body.put("paymentKey", paymentRequestDto.getPaymentKey());
         body.put("orderId", paymentRequestDto.getOrderId());
-        body.put("amount", paymentRequestDto.getTotalAmount());
+        body.put("amount", paymentRequestDto.getAmount());
+
+        log.info(">>> [TOSS 요청 준비]");
+        log.info(">>> paymentKey: {}", paymentRequestDto.getPaymentKey());
+        log.info(">>> orderId: {}", paymentRequestDto.getOrderId());
+        log.info(">>> amount: {}", paymentRequestDto.getAmount());
+
+        try {
+            String jsonBody = objectMapper.writeValueAsString(body);
+            log.info(">>> JSON Body: {}", jsonBody);
+            log.info(">>> Headers: {}", headers.toSingleValueMap());
+        } catch (Exception ex) {
+            log.warn(">>> JSON 직렬화 실패: {}", ex.getMessage());
+        }
 
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                tossPaymentConfig.getBaseUrl() + "/confirm",
-                HttpMethod.POST,
-                httpEntity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
+        try {
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    tossPaymentConfig.getBaseUrl() + "/confirm",
+                    HttpMethod.POST,
+                    httpEntity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new ParameterNamesModule());
+            mapper.registerModule(new Jdk8Module());
+            mapper.registerModule(new JavaTimeModule());
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new ParameterNamesModule());
-        mapper.registerModule(new Jdk8Module());
-        mapper.registerModule(new JavaTimeModule());
+            PaymentResponseDto paymentResponseDto = mapper.convertValue(response.getBody(), PaymentResponseDto.class);
 
-        PaymentResponseDto paymentResponseDto = mapper.convertValue(response, PaymentResponseDto.class);
+            Payment payment = paymentResponseDto.toEntity(paymentResponseDto, paymentRequestDto);
 
-        Payment payment = paymentResponseDto.toEntity(paymentResponseDto, paymentRequestDto);
+            paymentRepository.save(payment);
 
-        paymentRepository.save(payment);
+        } catch (HttpClientErrorException e) {
+            log.error(">>> Toss API Error Body: {}", e.getResponseBodyAsString());
+            log.error(">>> Toss API Error Status: {}", e.getStatusCode());
+        }
+
 
     }
 

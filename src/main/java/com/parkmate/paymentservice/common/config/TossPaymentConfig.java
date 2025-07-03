@@ -28,6 +28,7 @@ public class TossPaymentConfig {
     public HttpHeaders getHeaders() {
 
         HttpHeaders httpHeaders = new HttpHeaders();
+
         String credentials = secretKey + ":";
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
 
@@ -36,5 +37,7 @@ public class TossPaymentConfig {
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         return httpHeaders;
+
     }
 }
+

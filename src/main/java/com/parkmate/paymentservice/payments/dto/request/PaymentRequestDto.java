@@ -12,17 +12,17 @@ public class PaymentRequestDto {
     private String userUuid;
     private String paymentKey;
     private String orderId;
-    private Long totalAmount;
+    private Long amount;
 
     @Builder
     private PaymentRequestDto(String userUuid,
                               String paymentKey,
                               String orderId,
-                              Long totalAmount) {
+                              Long amount) {
         this.userUuid = userUuid;
         this.paymentKey = paymentKey;
         this.orderId = orderId;
-        this.totalAmount = totalAmount;
+        this.amount = amount;
     }
 
     public static PaymentRequestDto of(String userUuid, PaymentRequestVo paymentRequestVo) {
@@ -30,7 +30,7 @@ public class PaymentRequestDto {
                 .userUuid(userUuid)
                 .paymentKey(paymentRequestVo.getPaymentKey())
                 .orderId(paymentRequestVo.getOrderId())
-                .totalAmount(paymentRequestVo.getTotalAmount())
+                .amount(paymentRequestVo.getAmount())
                 .build();
     }
 
