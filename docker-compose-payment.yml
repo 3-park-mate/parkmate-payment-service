@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  payment:
+    container_name: payment-service
+    image: 090188239653.dkr.ecr.ap-northeast-2.amazonaws.com/payment-service
+    volumes:
+      - /home/ubuntu/config/payment/application.yml:/config/payment/application.yml
+    environment:
+      - SPRING_CONFIG_LOCATION=file:/config/payment/application.yml
+    ports:
+      - "9500:9500"
+    env_file:
+      - /home/ubuntu/env/.env.payment
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
