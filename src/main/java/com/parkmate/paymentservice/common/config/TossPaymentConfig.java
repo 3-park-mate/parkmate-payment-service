@@ -15,20 +15,14 @@ import java.util.Collections;
 @Configuration
 public class TossPaymentConfig {
 
-//    @Value("${payment.toss.client_key}")
-    private String clientKey = "test_ck_yZqmkKeP8gJzXnZBRqNYrbQRxB9l";
+    @Value("${payment.toss.client_key}")
+    private String clientKey;
 
-    //    @Value("${payment.toss.secret_key}")
-    private String secretKey = "test_sk_4yKeq5bgrpL5ExxbqG2ArGX0lzW6";
+    @Value("${payment.toss.secret_key}")
+    private String secretKey;
 
-//    @Value("${payment.toss.base_url}")
-    private String baseUrl = "https://api.tosspayments.com/v1/payments";
-
-//    @Value("${payment.toss.success_url}")
-    private String successUrl = "http://localhost:63342/payment-service/src/main/resources/templates/success.html";
-
-//    @Value("${payment.toss.fail_url}")
-    private String failUrl = "http://localhost:63342/payment-service/src/main/resources/templates/fail.html";
+    @Value("${payment.toss.base_url}")
+    private String baseUrl;
 
     @Bean
     public HttpHeaders getHeaders() {
