@@ -38,6 +38,14 @@ public class Payment extends BaseEntity {
     @Column(name = "user_uuid", nullable = false, length = 36)
     private String userUuid;
 
+    @Comment("호스트 UUID")
+    @Column(name = "host_uuid", nullable = false, length = 36)
+    private String hostUuid;
+
+    @Comment("주차장 UUID") // ✅ 추가된 부분
+    @Column(name = "parking_lot_uuid", nullable = false, length = 36)
+    private String parkingLotUuid;
+
     @Enumerated(EnumType.STRING)
     @Comment("결제 방식")
     @Column(name = "payment_method", nullable = false)
@@ -60,13 +68,15 @@ public class Payment extends BaseEntity {
     private ZonedDateTime approvedAt;
 
     @Builder
-    private Payment(Long id, String paymentCode, String paymentKey, String orderId, Long totalAmount, String userUuid, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
+    private Payment(Long id, String paymentCode, String paymentKey, String orderId, Long totalAmount, String userUuid, String hostUuid, String parkingLotUuid, PaymentMethod paymentMethod, PGProvider pgProvider, PaymentStatus paymentStatus, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
         this.id = id;
         this.paymentCode = paymentCode;
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.totalAmount = totalAmount;
         this.userUuid = userUuid;
+        this.hostUuid = hostUuid;
+        this.parkingLotUuid = parkingLotUuid;
         this.paymentMethod = paymentMethod;
         this.pgProvider = pgProvider;
         this.paymentStatus = paymentStatus;
